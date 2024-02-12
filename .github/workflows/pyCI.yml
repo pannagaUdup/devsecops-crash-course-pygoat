@@ -20,6 +20,7 @@ jobs:   #group all jobs run on CI workflow
       run: bandit -ll -ii -r . -f json -o ci_report.json
     - name: upload artifact
       uses: actions/upload-artifact@v3
+      if: always()
       with:
         name: bandit-finding
         path: ci_report.json
