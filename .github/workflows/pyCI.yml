@@ -7,7 +7,7 @@ jobs:   #group all jobs run on CI workflow
 
     steps:
     - name: Checkout code
-      uses: actions/Checkout@v2
+      uses: actions/checkout@v2
 
     - name: Set up Python
       uses: actions/setup-python@v2
