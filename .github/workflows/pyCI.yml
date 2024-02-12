@@ -17,5 +17,9 @@ jobs:   #group all jobs run on CI workflow
       run: pip install bandit
 
     - name: Run Bandit
-      run: bandit -ll -ii -r .
-
+      run: bandit -ll -ii -r . -fjson -o ci_report.json
+    - name: upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: bandit-finding
+        path: ci_report.json
