@@ -17,5 +17,5 @@ jobs:   #group all jobs run on CI workflow
       run: pip install bandit
 
     - name: Run Bandit
-      run: bandit -r .
-    
+      run: bandit -ll -ii -r .
+
