@@ -38,5 +38,7 @@ jobs:   #group all jobs run on CI workflow
       run: docker build -f Dockerfile -t myapp:latest .
     - name: docker scout scan
       run: |
+        curl -fsSL https://github.com/docker/scout-cli/blob/main/install.sh -o install-scout.sh
+        sh install-scout.sh
         docker scout quickview
         docker scout cves
