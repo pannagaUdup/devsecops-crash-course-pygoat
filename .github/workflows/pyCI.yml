@@ -35,7 +35,7 @@ jobs:   #group all jobs run on CI workflow
       with:
         docker_version: '20.10.7'
     - name: docker build image
-      run: docler build -f Doclerfile -t myapp:latest .
+      run: docker build -f Dockerfile -t myapp:latest .
     - name: docker scout scan
       run: 
         curl -fsSL https://github.com/docker/scout-cli/blob/main/install.sh -o install-scout.sh sh install-scout.sh
