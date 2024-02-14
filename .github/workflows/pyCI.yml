@@ -1,47 +1,48 @@
-name : CI
-on : [push]    #specify triggerevents like [push,..},also can specigy branches to trigger on push or so
-jobs:   #group all jobs run on CI workflow
+name: CI
+on:
+  push:
+jobs:
   sast_scan:
     name: Run Bandit Scan
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install Bandit
+        run: pip install bandit
+      - name: Run Bandit
+        run: bandit -ll -ii -r . -f json -o ci_report.json
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: bandit-finding
+          path: ci_report.json
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.8
-    - name: Install Bandit
-      run: pip install bandit
-
-    - name: Run Bandit
-      run: bandit -ll -ii -r . -f json -o ci_report.json
-    - name: upload artifact
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: bandit-finding
-        path: ci_report.json
   image_scan:
-    name: build and run image scan
+    name: Build and Run Image Scan
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-    - name: set up docker
-      uses: docker-practice/actions-setup-docker@v1
-      with:
-        docker_version: '20.10.7'
-    - name: docker build image
-      run: docker build -f Dockerfile -t myapp:latest .
-    - name: Docker Scout
-      id: docker-scout
-      uses: docker/scout-action@v1
-      with:
-        command: quickview,cves
-        to-latest: true
-        ignore-base: true
-        ignore-unchanged: true
-        only-fixed: true
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Login to Docker Registry
+        run: echo ${{ secrets.REPO_PWD}} | docker login -u ${{secrets.REPO_USER}} --password-stdin
+      - name: Set up Docker
+        uses: docker-practice/actions-setup-docker@v1
+        with:
+          docker_version: '20.10.7'
+      - name: Docker Build Image
+        run: docker build -f Dockerfile -t myapp:latest .
+      - name: Docker Scout
+        id: docker-scout
+        uses: docker/scout-action@v1
+        with:
+          command: quickview,cves
+          to-latest: true
+          ignore-base: true
+          ignore-unchanged: true
+          only-fixed: true
